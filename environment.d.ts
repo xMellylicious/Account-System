@@ -4,6 +4,13 @@ declare global {
         SQL_URI: string;
         NODE_ENV: 'development' | 'production';
         PORT?: string;
+
+        ARGON_TIME_COST: string;
+        ARGON_MEMORY_COST: string;
+        ARGON_PARALLELISM: string;
+        ARGON_HASH_LENGTH:  string;
+
+        JWT_SECRET: string;
       }
     }
   }
