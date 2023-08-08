@@ -17,6 +17,9 @@ import UsersRoute from "./v1/routes/user.routes"
 //Models
 import UserDBObject from "./models/models/user"
 
+//Middleware
+import { whitelist } from "./v1/middleware/whitelist.middleware"
+
 //Dev Config
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -59,6 +62,7 @@ class Server {
     private initialiseMiddleware(): void {
         this.app.use(express.json())
         this.app.use(cors())
+        this.app.use(whitelist)
     }
 
     //Configures API Routes
