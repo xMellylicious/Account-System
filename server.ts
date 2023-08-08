@@ -14,9 +14,6 @@ import cors from "cors"
 //===== V1 ROUTES =====//
 import UsersRoute from "./v1/routes/user.routes"
 
-//Objects
-const UsersRouteObj = new UsersRoute().router
-
 //Models
 import UserDBObject from "./models/models/user"
 
@@ -67,7 +64,7 @@ class Server {
     //Configures API Routes
     private loadRoutes(): void {
         //===== V1 ROUTES =====//
-        this.app.use('/v1/users', new UsersRoute().router)
+        this.app.use('/v1/users', UsersRoute)
     }
 
     //Opens a port for clients to connect to
