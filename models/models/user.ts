@@ -32,27 +32,35 @@ UserDBObject.init({
     },
     
     firstname: {
-        type:DataTypes.STRING
+        type:DataTypes.STRING,
+        allowNull: false,
     },
 
     surname: {
-        type:DataTypes.STRING
+        type:DataTypes.STRING,
+        allowNull: false,
     },
 
     username: {
-        type:DataTypes.STRING
+        type:DataTypes.STRING,
+        allowNull: false,
+        unique: true
     },
 
     email: {
-        type:DataTypes.STRING
+        type:DataTypes.STRING,
+        allowNull: false,
+        unique: true
     },
 
     permissionLevel: {
-        type:DataTypes.STRING
+        type:DataTypes.STRING,
+        allowNull: false,
     },
 
     password: {
-        type:DataTypes.STRING
+        type:DataTypes.STRING,
+        allowNull: false,
     },
 }, {timestamps:true, sequelize:connection, paranoid:true})
 

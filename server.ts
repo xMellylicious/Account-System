@@ -10,6 +10,10 @@ require("dotenv").config()
 import express from "express"
 import cors from "cors"
 
+//Routes
+//===== V1 ROUTES =====//
+import UsersRoute from "./v1/routes/user.routes"
+
 //Models
 import UserDBObject from "./models/models/user"
 
@@ -60,7 +64,7 @@ class Server {
     //Configures API Routes
     private loadRoutes(): void {
         //===== V1 ROUTES =====//
-        //this.app.use('/v1/users')
+        this.app.use('/v1/users', UsersRoute)
     }
 
     //Opens a port for clients to connect to
