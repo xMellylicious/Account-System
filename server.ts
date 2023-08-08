@@ -55,7 +55,7 @@ class Server {
     }
 
     private async initialiseDatabase() {
-        UserDBObject.sync({alter:isDev})
+        UserDBObject.sync({alter:isDev, force: false})
     }
 
     //Initialise API Middleware
