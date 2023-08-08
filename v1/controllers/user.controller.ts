@@ -57,4 +57,12 @@ async function updateInfo(req, res) {
     }   
 }
 
-export {createUser, getInformation, createToken, updateInfo}
+async function getAll(req, res) {
+    try {
+        return res.status(200).json({message:"User's details have been updated", user:req["authUser"]})
+    } catch (e) {
+        return res.status(500).json({message:e.message})
+    }  
+}
+
+export {createUser, getInformation, createToken, updateInfo, getAll}
