@@ -8,7 +8,31 @@ async function hashPassword(req: Request, res: Response, next: NextFunction) {
     try {
         if (!req.body || !req.body.password) { throw new Error("Incorrect details were passed to the API!")}
         let salt = await crypto.randomBytes(32)
-        req.body.password = await argon2i.hash(req.body.password, salt)
+        req.body.salt = salt
+        req.body.password = await argon2i.hash(req.body.password, req.body.salt)
+        next()
+    } catch (e) {
+        return res.status(500).json({message:e.message})
+    }
+}
+
+async function comparePasswords(req: Request, res: Response, next: NextFunction) {
+    try {
+        if (!req.body.password) {return res.status(401).json({message:"Passwords do not match"})}
+
+        req["authUser"] = await UserDBObject.findOne({
+            where: {
+                id:req.body.id
+            }
+        })
+        
+        if (!req["authUser"]) {return res.status(404).json({message:"User not found"})}
+        if (req["authUser"].permissionLevel < 1) {return res.status(403).json({message:"User has no permissions to execute"})}
+
+        const password = argon2i.verify(req["authUser"].password, req.body.password)
+
+        if (!password) {return res.status(401).json({message:"Passwords do not match"})}
+        
         next()
     } catch (e) {
         return res.status(500).json({message:e.message})
@@ -17,8 +41,8 @@ async function hashPassword(req: Request, res: Response, next: NextFunction) {
 
 async function validateToken(req: Request, res: Response, next: NextFunction) {
     try {
-        if (!req.header("Authorisation")) {throw new Error("Provided token was invalid")}
-        const decodedToken = jsonwebtoken.verify(req.header("Authorisation").replace("Bearer ", ""), process.env.JWT_SECRET)
+        if (!req.header("Authorization")) {throw new Error("Provided token was invalid")}
+        const decodedToken = jsonwebtoken.verify(req.header("Authorization").replace("Bearer ", ""), process.env.JWT_SECRET)
         const User = await UserDBObject.findOne({where: {id:decodedToken["id"]}})
 
         if (!User) {throw new Error("User was not found!")}
@@ -31,4 +55,4 @@ async function validateToken(req: Request, res: Response, next: NextFunction) {
     }
 }
 
-export {hashPassword, validateToken}
+export {hashPassword, validateToken, comparePasswords}
