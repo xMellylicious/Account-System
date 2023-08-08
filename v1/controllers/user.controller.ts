@@ -10,4 +10,18 @@ async function createUser(req, res) {
     }
 }
 
-export {createUser}
+async function getInformation(req, res) {
+    try {
+        const toReturn = []
+
+        for (var x in req.body) {
+            toReturn.push(req.authUser[x])
+        }
+
+        return res.status(201).json({message:"Details obtained", body:toReturn})
+    } catch (e) {
+        return res.status(500).json({message:e.message})
+    }   
+}
+
+export {createUser, getInformation}

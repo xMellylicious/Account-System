@@ -1,6 +1,6 @@
 import express from "express";
 import { hashPassword, validateToken } from "../middleware/user.middleware";
-import { createUser } from "../controllers/user.controller";
+import { createUser, getInformation } from "../controllers/user.controller";
 
 const router = express.Router()
 
@@ -8,10 +8,7 @@ const router = express.Router()
 router.post('/register', hashPassword, createUser)
 
 //Individual Routes
-router.get('/permissions', validateToken)
-router.get('/name', validateToken)
-router.get('/username', validateToken)
-router.get('/email', validateToken)
+router.get('/information', validateToken, getInformation)
 router.patch('/edit', validateToken)
 
 export default router
