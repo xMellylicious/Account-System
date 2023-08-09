@@ -1,7 +1,15 @@
+/*
+    __  __                 _                 _  _  _  _
+   |  \/  | __ _  _ _  ___| |_   _ __   ___ | || || || |
+   | |\/| |/ _` || '_|(_-/|   \ | '  \ / -_)| || | \_. |
+   |_|  |_|\__/_||_|  /__/|_||_||_|_|_|\___||_||_| |__/
+      MADE BY MELLY SOFTWARE. ALL RIGHTS PRESERVED.
+*/
+
 import jsonwebtoken from "jsonwebtoken"
 import UserDBObject from "../../models/models/user";
 
-async function createUser(req, res) {
+const createUser = async (req, res) => {
     try {
         req.body.permissionLevel = 1
         const newUser = await UserDBObject.create(req.body)
@@ -11,6 +19,18 @@ async function createUser(req, res) {
     }
 }
 
+const returnUser = async (req, res) => {
+    try {
+        if (!req["requestedUser"]) {return res.status(404).json({message:"No user was found!"})}
+        if (!req.params.ID && !req["requestedUser"]) {return res.status(400).json({message:"No ID was provided"})}
+
+        return res.status(200).json({message:"The requested user was found.", body:req["requestedUser"]})
+    } catch (e) {
+        return res.status(500).json({message:e.message})
+    }
+}
+
+//DEPRECATED
 async function getInformation(req, res) {
     try {
         const toReturn = []
@@ -41,6 +61,7 @@ async function createToken(req, res) {
     }   
 }
 
+//DEPRECATED
 async function updateInfo(req, res) {
     try {
         for (var x in req.body) {
@@ -57,6 +78,7 @@ async function updateInfo(req, res) {
     }   
 }
 
+//DEPRECATED
 async function getAll(req, res) {
     try {
         return res.status(200).json({message:"User sent", body:req["authUser"]})
@@ -65,4 +87,4 @@ async function getAll(req, res) {
     }  
 }
 
-export {createUser, getInformation, createToken, updateInfo, getAll}
+export {createUser, returnUser, createToken}

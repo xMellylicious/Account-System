@@ -1,8 +1,28 @@
 import { argon2i } from "argon2-ffi";
 import jsonwebtoken from "jsonwebtoken"
 import { Request, Response, NextFunction } from "express";
+import { Op } from "sequelize";
 import UserDBObject from "../../models/models/user";
 const crypto = require("crypto")
+
+const getUser = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        if (!req.params.ID) {res.status(400).json({message:"Incorrect Details were sent to the API."})}
+        
+        let user = await UserDBObject.findOne({where:{[Op.or]: [
+            {id:req.params.ID},
+            {username:req.params.ID}
+        ]}, })
+
+        if (!user) {res.status(404).json({message:"This user was not found."})}
+
+        req["authUser"] = user
+
+        next()
+    } catch (e) {
+        return res.status(500).json({message:e.message})
+    }
+}
 
 async function hashPassword(req: Request, res: Response, next: NextFunction) {
     try {
@@ -47,12 +67,13 @@ async function validateToken(req: Request, res: Response, next: NextFunction) {
 
         if (!User) {throw new Error("User was not found!")}
         if (User.permissionLevel < 1) {throw new Error("User has no permissions to execute")}
-
+        
         req["authUser"] = User
+
         next()
     } catch (e) {
         return res.status(500).json({message:e.message})
     }
 }
 
-export {hashPassword, validateToken, comparePasswords}
+export {getUser, hashPassword, validateToken, comparePasswords}

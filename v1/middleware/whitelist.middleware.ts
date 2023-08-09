@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 const whitelist = async (req: Request, res: Response, next: NextFunction) => {
     try {
         let validIps = ['::1', '::ffff:127.0.0.1', '127.0.0.1', '176.254.14.125'];
-        console.log(req.socket.remoteAddress)
+        
         if(!validIps.includes(req.socket.remoteAddress)) {return res.status(403).json({message:"IP not whitelisted"})}
 
         next()
