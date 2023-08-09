@@ -61,12 +61,12 @@ async function comparePasswords(req: Request, res: Response, next: NextFunction)
 
 async function validateToken(req: Request, res: Response, next: NextFunction) {
     try {
-        if (!req.header("Authorization")) {throw new Error("Provided token was invalid")}
+        if (!req.header("Authorization")) {return res.status(400).json(false)}
         const decodedToken = jsonwebtoken.verify(req.header("Authorization").replace("Bearer ", ""), process.env.JWT_SECRET)
         const User = await UserDBObject.findOne({where: {id:decodedToken["id"]}})
 
-        if (!User) {throw new Error("User was not found!")}
-        if (User.permissionLevel < 1) {throw new Error("User has no permissions to execute")}
+        if (!User) {return res.status(404).json(false)}
+        if (User.permissionLevel < 1) {return res.status(403).json(false)}
         
         req["authUser"] = User
 
