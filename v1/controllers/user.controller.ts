@@ -8,7 +8,9 @@
 
 import jsonwebtoken from "jsonwebtoken"
 import UserDBObject from "../../models/models/user";
-
+import { Sequelize, Op } from "sequelize";
+import { formatUser } from "../functions/format.functions";
+ 
 const createUser = async (req, res) => {
     try {
         req.body.permissionLevel = 1
@@ -25,6 +27,33 @@ const returnUser = async (req, res) => {
         if (!req.params.ID && !req["requestedUser"]) {return res.status(400).json({message:"No ID was provided"})}
 
         return res.status(200).json({message:"The requested user was found.", body:req["requestedUser"]})
+    } catch (e) {
+        return res.status(500).json({message:e.message})
+    }
+}
+
+const getUsers = async(req, res) => {
+    try {
+        if (!req.body.toFind || !Array.isArray(req.body.toFind)) {return res.status(400).json({message:"Provided usernames were not an array or were not provided."})}
+
+        let toReturn = []
+
+        for (const x in req.body.toFind) {
+            let User = await UserDBObject.findOne({
+                where:{[Op.or]: [
+                    Sequelize.where(
+                        Sequelize.fn('lower', Sequelize.col('username')),
+                        Sequelize.fn('lower', req.body.toFind[x]),
+                    ),
+                    {id:req.body.toFind[x]}
+                ]}
+            })
+
+            toReturn.push(await formatUser(User["dataValues"]))
+            //console.log(req.body.toFind[x])
+        }
+
+        return res.status(200).json({message:"The requested users were found.", body: toReturn})
     } catch (e) {
         return res.status(500).json({message:e.message})
     }
@@ -87,4 +116,4 @@ async function getAll(req, res) {
     }  
 }
 
-export {createUser, returnUser, createToken}
+export {createUser, returnUser, createToken, getUsers}

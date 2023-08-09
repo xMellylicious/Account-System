@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { formatUser } from "../functions/format.functions";
 
 const formatUserJson = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -6,10 +7,7 @@ const formatUserJson = async (req: Request, res: Response, next: NextFunction) =
 
         let oldArr = req["authUser"]
 
-        req["requestedUser"] = {
-            id:oldArr.id,
-            username:oldArr.username,
-        }
+        req["requestedUser"] = formatUser(req["authUser"])
 
         next()
     } catch (e) {

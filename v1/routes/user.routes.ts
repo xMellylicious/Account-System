@@ -8,15 +8,22 @@
 
 import express from "express";
 import { getUser, hashPassword, validateToken, comparePasswords } from "../middleware/user.middleware";
-import { createUser, returnUser, createToken } from "../controllers/user.controller";
+import { createUser, returnUser, createToken, getUsers } from "../controllers/user.controller";
 import { formatUserJson } from "../middleware/format.middleware";
 import { whitelist } from "../middleware/whitelist.middleware";
 
 const router = express.Router()
 
 //Public Routes
-router.get('/users/find/:ID', getUser, formatUserJson, returnUser)
+
+//Find one user via ID
+router.get('/user/:ID', getUser, formatUserJson, returnUser)
+
+//Get the currently-authenticated user
 router.get('/users/authenticated', validateToken, formatUserJson, returnUser)
+
+//Get Multiple Users via Username
+router.post('/users', getUsers)
 
 router.post('/register', whitelist, hashPassword, createUser)
 router.post('/authenticate', whitelist, comparePasswords, createToken)
