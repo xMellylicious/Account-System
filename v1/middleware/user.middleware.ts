@@ -66,7 +66,7 @@ async function validateToken(req: Request, res: Response, next: NextFunction) {
         const User = await UserDBObject.findOne({where: {id:decodedToken["id"]}})
 
         if (!User) {return res.status(404).json(false)}
-        if (User.permissionLevel < 1) {return res.status(403).json(false)}
+        if (User.permissionLevel < 1 || User.isBanned) {return res.status(403).json(false)}
         
         req["authUser"] = User
 
