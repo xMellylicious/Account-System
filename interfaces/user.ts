@@ -10,6 +10,7 @@ import { DataTypes, Model, Optional } from "sequelize"
 
 export interface IUserType {
     id:Number;
+    isBanned:Boolean;
     firstname?:String;
     surname?:String;
     username:String;

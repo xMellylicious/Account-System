@@ -11,6 +11,7 @@ import connection from "../connection"
 import { IUserTypeInput, IUserType } from "../../interfaces/user"
 
 class UserDBObject extends Model<IUserType, IUserTypeInput> implements IUserType {
+    public isBanned: boolean;
     public id: number;
     public firstname?: string;
     public surname?: string;
@@ -31,6 +32,11 @@ UserDBObject.init({
         primaryKey:true
     },
     
+    isBanned: {
+        type:DataTypes.BOOLEAN,
+        defaultValue:false
+    },
+
     firstname: {
         type:DataTypes.STRING,
         allowNull: false,
