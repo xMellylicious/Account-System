@@ -7,14 +7,14 @@ const crypto = require("crypto")
 
 const getUser = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        if (!req.params.ID) {res.status(400).json({message:"Incorrect Details were sent to the API."})}
+        if (!req.params.ID) {return res.status(400).json({message:"Incorrect Details were sent to the API."})}
         
         let user = await UserDBObject.findOne({where:{[Op.or]: [
             {id:req.params.ID},
             {username:req.params.ID}
         ]}, })
 
-        if (!user) {res.status(404).json({message:"This user was not found."})}
+        if (!user) {return res.status(404).json({message:"This user was not found."})}
 
         req["authUser"] = user
 
