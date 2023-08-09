@@ -23,7 +23,7 @@ router.get('/user/:ID', getUser, formatUserJson, returnUser)
 router.get('/users/authenticated', validateToken, formatUserJson, returnUser)
 
 //Get Multiple Users via Username
-router.post('/users', getUsers)
+router.post('/users/find', getUsers)
 
 router.post('/register', whitelist, hashPassword, createUser)
 router.post('/authenticate', whitelist, comparePasswords, createToken)
