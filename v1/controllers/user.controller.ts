@@ -34,32 +34,34 @@ const returnUser = async (req, res) => {
 
 const getUsers = async(req, res) => {
     try {
-        if (!req.body.toFind || !Array.isArray(req.body.toFind)) {return res.status(400).json({message:"Provided usernames were not an array or were not provided."})}
+        if (!req.body.toFind || !Array.isArray(req.body.toFind)) {return res.status(400).json({message:"Provided usernames and IDs were not an array or were not provided."})}
 
         let toReturn = []
         let alreadySearched = []
 
         for (const x in req.body.toFind) {
-            if (!alreadySearched.includes(req.body.toFind[x])) {
-                let User = await UserDBObject.findOne({
-                    where:{[Op.or]: [
-                        Sequelize.where(
-                            Sequelize.fn('lower', Sequelize.col('username')),
-                            Sequelize.fn('lower', req.body.toFind[x]),
-                        ),
-                        {id:req.body.toFind[x]}
-                    ]}
-                })
-                let formattedJson = await formatUser(User["dataValues"])
+            if (alreadySearched.includes(req.body.toFind[x])) {continue}
 
-                alreadySearched.push(formattedJson.id, formattedJson.username.toLowerCase())
+            let User = await UserDBObject.findOne({
+                where:{[Op.or]: [
+                    Sequelize.where(
+                        Sequelize.fn('lower', Sequelize.col('username')),
+                        Sequelize.fn('lower', req.body.toFind[x]),
+                    ),
+                    {id:req.body.toFind[x]}
+                ]}
+            })
 
-                toReturn.push(formattedJson)   
-            }
+            if (!User) {continue}
+
+            let formattedJson = await formatUser(User["dataValues"])
+            alreadySearched.push(formattedJson.id, formattedJson.username.toLowerCase())
+            toReturn.push(formattedJson)   
+
             //console.log(req.body.toFind[x])
         }
 
-        return res.status(200).json({message:"The requested users were found.", body: toReturn})
+        return res.status(200).json({message:`${toReturn.length} User(s) found`, body: toReturn})
     } catch (e) {
         return res.status(500).json({message:e.message})
     }
