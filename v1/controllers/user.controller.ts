@@ -37,19 +37,25 @@ const getUsers = async(req, res) => {
         if (!req.body.toFind || !Array.isArray(req.body.toFind)) {return res.status(400).json({message:"Provided usernames were not an array or were not provided."})}
 
         let toReturn = []
+        let alreadySearched = []
 
         for (const x in req.body.toFind) {
-            let User = await UserDBObject.findOne({
-                where:{[Op.or]: [
-                    Sequelize.where(
-                        Sequelize.fn('lower', Sequelize.col('username')),
-                        Sequelize.fn('lower', req.body.toFind[x]),
-                    ),
-                    {id:req.body.toFind[x]}
-                ]}
-            })
+            if (!alreadySearched.includes(req.body.toFind[x])) {
+                let User = await UserDBObject.findOne({
+                    where:{[Op.or]: [
+                        Sequelize.where(
+                            Sequelize.fn('lower', Sequelize.col('username')),
+                            Sequelize.fn('lower', req.body.toFind[x]),
+                        ),
+                        {id:req.body.toFind[x]}
+                    ]}
+                })
+                let formattedJson = await formatUser(User["dataValues"])
 
-            toReturn.push(await formatUser(User["dataValues"]))
+                alreadySearched.push(formattedJson.id, formattedJson.username.toLowerCase())
+
+                toReturn.push(formattedJson)   
+            }
             //console.log(req.body.toFind[x])
         }
 

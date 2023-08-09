@@ -2,7 +2,7 @@ export const config = {
     "version": {
         "main":"1",
         "milestone":"1",
-        "revision":"1"
+        "revision":"1.1"
     },
 
     "branding": {
