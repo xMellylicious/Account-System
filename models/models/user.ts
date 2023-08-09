@@ -44,13 +44,13 @@ UserDBObject.init({
     username: {
         type:DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: "column"
     },
 
     email: {
         type:DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: "column"
     },
 
     permissionLevel: {

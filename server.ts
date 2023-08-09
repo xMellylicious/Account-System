@@ -9,16 +9,19 @@ require("dotenv").config()
 
 import express from "express"
 import cors from "cors"
+import useragent from "express-useragent"
+import ratelimit from "express-rate-limit"
 
 //Routes
 //===== V1 ROUTES =====//
 import UsersRoute from "./v1/routes/user.routes"
+import DefaultRoute from "./v1/routes/default.routes"
 
 //Models
 import UserDBObject from "./models/models/user"
 
 //Middleware
-import { whitelist } from "./v1/middleware/whitelist.middleware"
+import { getUserAgent } from "./v1/middleware/useragent.middleware"
 
 //Dev Config
 const isDev = process.env.NODE_ENV === 'development'
@@ -55,20 +58,36 @@ class Server {
     }
 
     private async initialiseDatabase() {
-        UserDBObject.sync({alter:isDev})
+        UserDBObject.sync({alter:isDev, force: false})
     }
 
     //Initialise API Middleware
     private initialiseMiddleware(): void {
+        this.app.set('etag', false)
+        this.app.use((req, res, next) => {
+            res.set('Cache-Control', 'no-store')
+            next()
+          })
+        //Proxy
+        this.app.set('trust proxy', '127.0.0.1');
+
+        //API Ratelimit
+        this.app.use(ratelimit({
+            max:10,
+            windowMs: 1 * 60 * 1000
+        }))
+
         this.app.use(express.json())
         this.app.use(cors())
-        this.app.use(whitelist)
+        this.app.use(useragent.express())
+        this.app.use(getUserAgent)
     }
 
     //Configures API Routes
     private loadRoutes(): void {
         //===== V1 ROUTES =====//
-        this.app.use('/v1/users', UsersRoute)
+        this.app.use('/v1', UsersRoute)
+        this.app.use('/', DefaultRoute)
     }
 
     //Opens a port for clients to connect to
