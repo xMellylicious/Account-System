@@ -10,7 +10,8 @@ import jsonwebtoken from "jsonwebtoken"
 import UserDBObject from "../../models/models/user";
 import { Sequelize, Op } from "sequelize";
 import { formatUser } from "../functions/format.functions";
- 
+import { config } from "../../config";
+
 const createUser = async (req, res) => {
     try {
         req.body.permissionLevel = 1
@@ -35,7 +36,8 @@ const returnUser = async (req, res) => {
 const getUsers = async(req, res) => {
     try {
         if (!req.body.toFind || !Array.isArray(req.body.toFind)) {return res.status(400).json({message:"Provided usernames and IDs were not an array or were not provided."})}
-
+        if (req.body.toFind.length > config.search.limitSearchBy) {return res.status(400).json({message:"You've exceeded the amount of items that can be searched.", limit:config.search.limitSearchBy})}
+        
         let toReturn = []
         let alreadySearched = []
 

@@ -8,5 +8,9 @@ export const config = {
     "branding": {
         "name":"MellySoft Accounts Endpoint",
         "desc":"MellySoft's official account endpoint"
+    },
+
+    "search": {
+        "limitSearchBy":10,
     }
 }
