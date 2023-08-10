@@ -15,7 +15,7 @@ const connection = new Sequelize(process.env.SQL_URI,
             freezeTableName: true
         },*/
 
-        //logging: false, 
+        logging: false, 
         retry: {
             match:[/Deadlock/i],
             max:3,
