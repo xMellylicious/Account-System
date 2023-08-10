@@ -6,9 +6,10 @@
       MADE BY MELLY SOFTWARE. ALL RIGHTS PRESERVED.
 */
 
-import { DataTypes, Model, Optional } from "sequelize"
+import { DataTypes, IntegerDataType, Model, Optional } from "sequelize"
 import connection from "../connection"
 import { IUserTypeInput, IUserType } from "../../interfaces/user"
+import RoleDBObject from "./role";
 
 class UserDBObject extends Model<IUserType, IUserTypeInput> implements IUserType {
     public isBanned: boolean;
@@ -23,6 +24,12 @@ class UserDBObject extends Model<IUserType, IUserTypeInput> implements IUserType
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
     public readonly deletedAt!: Date;
+
+    //Custom Methods
+    public async addRoles(role: RoleDBObject[]): Promise<void> {
+        const userRoles = role.map(role => ({ UserId: this.id, RoleId: role.id }));
+        await connection.models.UserRole.bulkCreate(userRoles);
+    }
 }
 
 UserDBObject.init({
@@ -31,7 +38,7 @@ UserDBObject.init({
         autoIncrement:true,
         primaryKey:true
     },
-    
+
     isBanned: {
         type:DataTypes.BOOLEAN,
         defaultValue:false
@@ -57,11 +64,6 @@ UserDBObject.init({
         type:DataTypes.STRING,
         allowNull: false,
         unique: "column"
-    },
-
-    permissionLevel: {
-        type:DataTypes.STRING,
-        allowNull: false,
     },
 
     password: {

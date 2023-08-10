@@ -1,8 +1,8 @@
 export const config = {
     "version": {
         "main":"1",
-        "milestone":"1",
-        "revision":"2"
+        "milestone":"2",
+        "revision":"0"
     },
 
     "branding": {

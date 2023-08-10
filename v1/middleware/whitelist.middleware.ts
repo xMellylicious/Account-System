@@ -1,3 +1,11 @@
+/*
+    __  __                 _                 _  _  _  _
+   |  \/  | __ _  _ _  ___| |_   _ __   ___ | || || || |
+   | |\/| |/ _` || '_|(_-/|   \ | '  \ / -_)| || | \_. |
+   |_|  |_|\__/_||_|  /__/|_||_||_|_|_|\___||_||_| |__/
+      MADE BY MELLY SOFTWARE. ALL RIGHTS PRESERVED.
+*/
+
 import { Request, Response, NextFunction } from "express";
 
 const whitelist = async (req: Request, res: Response, next: NextFunction) => {

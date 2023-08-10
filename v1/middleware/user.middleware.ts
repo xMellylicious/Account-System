@@ -1,8 +1,17 @@
+/*
+    __  __                 _                 _  _  _  _
+   |  \/  | __ _  _ _  ___| |_   _ __   ___ | || || || |
+   | |\/| |/ _` || '_|(_-/|   \ | '  \ / -_)| || | \_. |
+   |_|  |_|\__/_||_|  /__/|_||_||_|_|_|\___||_||_| |__/
+      MADE BY MELLY SOFTWARE. ALL RIGHTS PRESERVED.
+*/
+
 import { argon2i } from "argon2-ffi";
 import jsonwebtoken from "jsonwebtoken"
 import { Request, Response, NextFunction } from "express";
 import { Op } from "sequelize";
 import UserDBObject from "../../models/models/user";
+import RoleDBObject from "../../models/models/role";
 const crypto = require("crypto")
 
 const getUser = async(req: Request, res: Response, next: NextFunction) => {
@@ -10,9 +19,15 @@ const getUser = async(req: Request, res: Response, next: NextFunction) => {
         if (!req.params.ID) {return res.status(400).json({message:"Incorrect Details were sent to the API."})}
         
         let user = await UserDBObject.findOne({where:{[Op.or]: [
-            {id:req.params.ID},
-            {username:req.params.ID}
-        ]}, })
+                {id:req.params.ID},
+                {username:req.params.ID}
+            ]}, 
+            include: {
+                model:RoleDBObject,
+                as:"UserRoles",
+                attributes: ["id", "name", "desc"],
+            }
+        })
 
         if (!user) {return res.status(404).json({message:"This user was not found."})}
 

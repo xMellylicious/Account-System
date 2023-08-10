@@ -6,7 +6,8 @@
       MADE BY MELLY SOFTWARE. ALL RIGHTS PRESERVED.
 */
 
-import { DataTypes, Model, Optional } from "sequelize"
+import { DataTypes, IntegerDataType, Model, Optional } from "sequelize"
+import RoleDBObject from "../models/models/role";
 
 export interface IUserType {
     id:Number;
@@ -15,7 +16,6 @@ export interface IUserType {
     surname?:String;
     username:String;
     email:String;
-    permissionLevel:Number;
     password:String;
     createdAt?:Date;
     updatedAt?:Date;

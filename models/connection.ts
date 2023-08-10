@@ -11,7 +11,11 @@ import { Sequelize } from "sequelize";
 //Configure the Connection
 const connection = new Sequelize(process.env.SQL_URI, 
     {
-        logging: false, 
+        /*define: {
+            freezeTableName: true
+        },*/
+
+        //logging: false, 
         retry: {
             match:[/Deadlock/i],
             max:3,

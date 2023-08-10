@@ -16,12 +16,18 @@ import ratelimit from "express-rate-limit"
 //===== V1 ROUTES =====//
 import UsersRoute from "./v1/routes/user.routes"
 import DefaultRoute from "./v1/routes/default.routes"
+import RolesRoute from "./v1/routes/roles.routes"
+import PermissionsRoute from "./v1/routes/permissions.routes"
 
 //Models
 import UserDBObject from "./models/models/user"
+import RoleDBObject from "./models/models/role"
+import PermissionDBObject from "./models/models/permission"
+import RolePermissionObj from "./models/models/rolepermission"
 
 //Middleware
 import { getUserAgent } from "./v1/middleware/useragent.middleware"
+import UserRole from "./models/models/userRole"
 
 //Dev Config
 const isDev = process.env.NODE_ENV === 'development'
@@ -58,7 +64,18 @@ class Server {
     }
 
     private async initialiseDatabase() {
+        RoleDBObject.sync({alter:isDev, force: false})
         UserDBObject.sync({alter:isDev, force: false})
+        PermissionDBObject.sync({alter:isDev, force: false})
+
+        UserRole.sync({alter:isDev, force: false})
+        RolePermissionObj.sync({alter:isDev, force: false})
+
+        UserDBObject.belongsToMany(RoleDBObject, {through:"UserRole", foreignKey:'UserId', as: 'UserRoles'})
+        RoleDBObject.belongsToMany(UserDBObject, {through:"UserRole", foreignKey:'RoleId', as: 'RoleUsers'})
+
+        PermissionDBObject.belongsToMany(RoleDBObject, {through:"RolePermission", foreignKey:'PermissionId', as: 'Permissions'})
+        RoleDBObject.belongsToMany(PermissionDBObject, {through:"RolePermission", foreignKey:'RoleId', as: 'RolePermissions'})
     }
 
     //Initialise API Middleware
@@ -86,7 +103,9 @@ class Server {
     //Configures API Routes
     private loadRoutes(): void {
         //===== V1 ROUTES =====//
+        this.app.use('/v1', RolesRoute)
         this.app.use('/v1', UsersRoute)
+        this.app.use('/v1', PermissionsRoute)
         this.app.use('/', DefaultRoute)
     }
 

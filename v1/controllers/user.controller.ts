@@ -8,6 +8,7 @@
 
 import jsonwebtoken from "jsonwebtoken"
 import UserDBObject from "../../models/models/user";
+import RoleDBObject from "../../models/models/role";
 import { Sequelize, Op } from "sequelize";
 import { formatUser } from "../functions/format.functions";
 import { config } from "../../config";
@@ -51,7 +52,13 @@ const getUsers = async(req, res) => {
                         Sequelize.fn('lower', req.body.toFind[x]),
                     ),
                     {id:req.body.toFind[x]}
-                ]}
+                ]},
+
+                include: {
+                    model:RoleDBObject,
+                    as:"UserRoles",
+                    attributes: ["id", "name", "desc"]
+                },
             })
 
             if (!User) {continue}
