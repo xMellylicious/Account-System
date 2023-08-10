@@ -26,7 +26,7 @@ PermissionDBObject.init({
         primaryKey:true
     },
 
-    name: {type: DataTypes.STRING, unique:true},
+    name: {type: DataTypes.STRING, unique:"column"},
 }, {modelName:'Permission', timestamps:true, sequelize:connection, paranoid:true})
 
 export default PermissionDBObject

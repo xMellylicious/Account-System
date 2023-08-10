@@ -11,6 +11,7 @@ import { getUser, hashPassword, validateToken, comparePasswords } from "../middl
 import { createUser, returnUser, createToken, getUsers } from "../controllers/user.controller";
 import { formatUserJson } from "../middleware/format.middleware";
 import { whitelist } from "../middleware/whitelist.middleware";
+import { getUserPermissions } from "../controllers/permissions.controller";
 
 const router = express.Router()
 
@@ -18,6 +19,7 @@ const router = express.Router()
 
 //Find one user via ID
 router.get('/user/:ID', getUser, formatUserJson, returnUser)
+router.get('/user/:ID/permissions', getUser, formatUserJson, getUserPermissions)
 
 //Get the currently-authenticated user
 router.get('/users/authenticated', validateToken, formatUserJson, returnUser)
