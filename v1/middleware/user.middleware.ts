@@ -78,7 +78,14 @@ async function validateToken(req: Request, res: Response, next: NextFunction) {
     try {
         if (!req.header("Authorization")) {return res.status(400).json(false)}
         const decodedToken = jsonwebtoken.verify(req.header("Authorization").replace("Bearer ", ""), process.env.JWT_SECRET)
-        const User = await UserDBObject.findOne({where: {id:decodedToken["id"]}})
+        const User = await UserDBObject.findOne(
+            {where: {id:decodedToken["id"]},
+            include: {
+                model:RoleDBObject,
+                as:"UserRoles",
+                attributes: ["id", "name", "desc"],
+            }
+        })
 
         if (!User) {return res.status(404).json(false)}
         if (User.permissionLevel < 1 || User.isBanned) {return res.status(403).json(false)}
