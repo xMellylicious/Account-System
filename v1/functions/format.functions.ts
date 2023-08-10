@@ -6,6 +6,14 @@ const formatRoles = async (roles) => {
     return roles
 }
 
+const formatPermissions = async (permissions) => {
+    permissions.map(role => {
+        delete role["dataValues"]["RolePermission"]
+    })
+
+    return permissions
+}
+
 const formatUser = async (user) => {
     return {
         isBanned:user.isBanned,
@@ -19,7 +27,7 @@ const formatRole = async(role) => {
     return {
         name:role.name,
         desc:role.desc,
-        permissions:role.RolePermissions
+        permissions:await formatPermissions(role.RolePermissions)
     }
 }
 
