@@ -9,9 +9,12 @@
 import express from "express";
 import { getUser, hashPassword, validateToken, comparePasswords } from "../middleware/user.middleware";
 import { whitelist } from "../middleware/whitelist.middleware";
-import { createRole, assignRole, getUserRoles, getRoles, deleteRole, editRole } from "../controllers/roles.controller";
+import { createRole, assignRole, getUserRoles, getRoles, getRole, deleteRole, editRole } from "../controllers/roles.controller";
 
 const router = express.Router()
+
+//Public Routes
+router.get('/role/:ID', getRole)
 
 router.get('/roles', whitelist, validateToken, getUserRoles)
 router.post('/roles/find', whitelist, validateToken, getRoles)

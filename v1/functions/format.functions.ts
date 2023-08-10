@@ -15,4 +15,12 @@ const formatUser = async (user) => {
     }
 }
 
-export {formatUser}
+const formatRole = async(role) => {
+    return {
+        name:role.name,
+        desc:role.desc,
+        permissions:role.RolePermissions
+    }
+}
+
+export {formatUser, formatRole}

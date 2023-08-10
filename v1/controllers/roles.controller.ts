@@ -10,7 +10,7 @@ import jsonwebtoken from "jsonwebtoken"
 import UserDBObject from "../../models/models/user";
 import RoleDBObject from "../../models/models/role";
 import { Sequelize, Op } from "sequelize";
-import { formatUser } from "../functions/format.functions";
+import { formatUser, formatRole } from "../functions/format.functions";
 import { config } from "../../config";
 import PermissionDBObject from "../../models/models/permission";
 
@@ -27,6 +27,33 @@ const getUserRoles = async(req, res) => {
         let toReturn = await formatUser(User)
 
         return res.status(200).json({message:`${toReturn["roles"].length} role(s) were found`, username:toReturn["username"], body:toReturn["roles"]})
+    } catch (e) {
+        return res.status(500).json({message:e.message})
+    }
+}
+
+const getRole = async(req, res) => {
+    try {
+        if (!req.params.ID) {return res.status(400).json({message:"No ID was provided."})}
+        
+        let Role = await RoleDBObject.findOne({
+            where:{[Op.or]: [
+                Sequelize.where(
+                    Sequelize.fn('lower', Sequelize.col('name')),
+                    Sequelize.fn('lower', req.params.ID),
+                ),
+                {id:req.params.ID}
+            ]}, 
+
+            include: {
+                model:PermissionDBObject,
+                as:"RolePermissions",
+                attributes: ["id", "name"]
+            },
+        })
+
+        if (!Role) {return res.status(404).json({message:"The requested role was not found."})}
+        return res.status(200).json({message:"The specified role was found.", body:await formatRole(Role)})
     } catch (e) {
         return res.status(500).json({message:e.message})
     }
@@ -143,4 +170,4 @@ const deleteRole  = async (req, res) => {
     }
 }
 
-export {createRole, assignRole, getUserRoles, getRoles, deleteRole, editRole}
+export {createRole, assignRole, getUserRoles, getRoles, getRole, deleteRole, editRole}
